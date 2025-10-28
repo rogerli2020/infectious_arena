@@ -1,0 +1,25 @@
+using UnityEngine;
+using Unity.Entities;
+using UnityEngine.Serialization;
+
+[DisallowMultipleComponent]
+public class FirstPersonPlayerAuthoring : MonoBehaviour
+{
+    public GameObject ControlledCharacter;
+    public float LookInputSensitivity = 0.01f;
+
+    public class Baker : Baker<FirstPersonPlayerAuthoring>
+    {
+        public override void Bake(FirstPersonPlayerAuthoring authoring)
+        {
+            Entity entity = GetEntity(TransformUsageFlags.None);
+            AddComponent(entity, new FirstPersonPlayer
+            {
+                ControlledCharacter = GetEntity(authoring.ControlledCharacter, TransformUsageFlags.Dynamic),
+                LookInputSensitivity = authoring.LookInputSensitivity,
+            });
+            AddComponent<FirstPersonPlayerInputs>(entity);
+            AddComponent(entity, new FirstPersonPlayerNetworkInput());
+        }
+    }
+}
